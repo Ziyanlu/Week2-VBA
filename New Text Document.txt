@@ -1,0 +1,89 @@
+Sub Stock()
+        
+    Dim Ticker_Type As LongLong
+    Dim Total As LongLong
+    Dim ws As Worksheet
+    For Each ws In Worksheets
+        ws.Activate
+    
+    Dim Open_Price As LongLong
+    Dim Close_Price As LongLong
+    Dim Start As LongLong
+    Dim Row As LongLong
+    
+        Total = 0
+        Ticker_Type = 2
+        Start = 2
+        Row = 2
+        LastRow = ws.Cells(Rows.Count, 1).End(xlUp).Row
+        
+        ws.Range("I1").Value = "Ticker"
+        ws.Range("J1").Value = "Yearly Change"
+        ws.Range("K1").Value = "Percentage Change"
+        ws.Range("L1").Value = "Total Volume"
+        ws.Range("O2").Value = "Greates % Increase"
+        ws.Range("O3").Value = "Greates % decrease"
+        ws.Range("O4").Value = "Greates Total Value"
+        ws.Range("P1").Value = "Ticker"
+        ws.Range("Q1").Value = "Value"
+        
+        For i = 2 To LastRow
+              If ws.Cells(i + 1, 1).Value <> ws.Cells(i, 1).Value Then
+                 
+                  ws.Cells(Ticker_Type, 9).Value = ws.Cells(i, 1)
+                 
+                  ws.Cells(Row, 10).Value = ws.Cells(i, 6).Value - ws.Cells(Start, 3).Value
+                                                   
+                  Start = i + 1
+                  Row = Row + 1
+                                            
+                  Total = Total + ws.Cells(i, 7).Value
+                  ws.Cells(Ticker_Type, 12).Value = Total
+                 
+                 
+                  Ticker_Type = Ticker_Type + 1
+                  Total = 0
+                  
+                  
+               
+               Else
+                 Total = Total + ws.Cells(i, 7).Value
+                               
+                 
+              End If
+              
+              If (ws.Cells(Row, 10).Value) > 0 Then
+                         ws.Cells(Row, 10).Interior.ColorIndex = 4
+              ElseIf (ws.Cells(Row, 10).Value) < 0 Then
+                         ws.Cells(Row, 10).Interior.ColorIndex = 3
+              End If
+              
+              If ws.Cells(Row, 10).Value <> 0 Then
+                 ws.Cells(Row, 11).Value = ws.Cells(Row, 10).Value / ws.Cells(Start, 3).Value
+              ElseIf ws.Cells(Row, 10).Value = 0 Then
+                 ws.Cells(Row, 11).Value = 0
+              
+              End If
+            
+              ws.Cells(Row, 11).Value = Format(ws.Cells(Row, 11).Value, "Percent")
+              ws.Range("Q2").Value = Format(ws.Range("Q2").Value, "Percent")
+              ws.Range("Q3").Value = Format(ws.Range("Q3").Value, "Percent")
+              
+              ws.Range("Q2").Value = WorksheetFunction.Max(Range("K:K"))
+              ws.Range("Q3").Value = WorksheetFunction.Min(Range("K:K"))
+              ws.Range("Q4").Value = WorksheetFunction.Max(Range("L:L"))
+                           
+              If ws.Cells(i, 11).Value = ws.Range("Q2").Value Then
+                 ws.Range("P2").Value = ws.Cells(i, 9).Value
+              End If
+              
+              If ws.Cells(i, 11).Value = ws.Range("Q3").Value Then
+                 ws.Range("P3").Value = ws.Cells(i, 9).Value
+              End If
+              
+              If ws.Cells(i, 12).Value = ws.Range("Q4").Value Then
+                 ws.Range("P4").Value = ws.Cells(i, 9).Value
+              End If
+      
+        Next i
+    Next ws
